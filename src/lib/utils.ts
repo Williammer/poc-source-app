@@ -10,7 +10,7 @@ export function formatNumber(value: number): string {
 
 export function safeDivide(a: number, b: number): number {
   if (b === 0) {
-    throw new Error('Division by zero')
+    return Infinity
   }
   return a / b
 }

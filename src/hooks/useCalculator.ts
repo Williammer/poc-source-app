@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { safeDivide, clamp } from '../lib/utils'
+import { safeDivide } from '../lib/utils'
 
 export type Operation = 'add' | 'subtract' | 'multiply' | 'divide'
 
@@ -82,7 +82,7 @@ export function useCalculator() {
         }
       }
 
-      const result = calculate(prev.previousValue, inputValue, prev.operation)
+      const result = calculate(prev.previousValue, inputValue, prev.operation!)
 
       return {
         display: String(result),
@@ -100,7 +100,7 @@ export function useCalculator() {
       }
 
       const inputValue = parseFloat(prev.display)
-      const result = calculate(prev.previousValue, inputValue, prev.operation)
+      const result = calculate(prev.previousValue, inputValue, prev.operation!)
 
       return {
         display: String(result),
