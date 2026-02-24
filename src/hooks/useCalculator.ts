@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
-import { safeDivide } from '../lib/utils'
+import { safeDivide, power } from '../lib/utils'
 
-export type Operation = 'add' | 'subtract' | 'multiply' | 'divide'
+export type Operation = 'add' | 'subtract' | 'multiply' | 'divide' | 'power'
 
 export interface CalculatorState {
   display: string
@@ -131,6 +131,8 @@ function calculate(a: number, b: number, operation: Operation): number {
       return a * b
     case 'divide':
       return safeDivide(a, b)
+    case 'power':
+      return power(a, b)
     default:
       return b
   }

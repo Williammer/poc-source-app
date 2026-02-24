@@ -15,6 +15,10 @@ export function safeDivide(a: number, b: number): number {
   return a / b
 }
 
+export function power(base: number, exponent: number): number {
+  return Math.pow(base, exponent)
+}
+
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
 }
