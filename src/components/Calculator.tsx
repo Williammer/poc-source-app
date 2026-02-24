@@ -9,7 +9,7 @@ export function Calculator() {
     inputDigit(digit)
   }
 
-  const handleOperationClick = (operation: 'add' | 'subtract' | 'multiply' | 'divide') => {
+  const handleOperationClick = (operation: 'add' | 'subtract' | 'multiply' | 'divide' | 'power') => {
     performOperation(operation)
   }
 
@@ -87,6 +87,13 @@ export function Calculator() {
 
         <Button onClick={inputDecimal} data-testid="decimal">
           .
+        </Button>
+        <Button
+          onClick={() => handleOperationClick('power')}
+          variant="secondary"
+          data-testid="power"
+        >
+          xʸ
         </Button>
       </div>
 
