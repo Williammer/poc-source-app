@@ -8,35 +8,13 @@ permissions:
   contents: read
   statuses: write
 
-jobs:
-  validate-secrets:
-    name: Validate Required Secrets
-    runs-on: ubuntu-latest
-    outputs:
-      e2e-repo: ${{ steps.check-secrets.outputs.e2e-repo }}
-      secrets-valid: ${{ steps.check-secrets.outputs.secrets-valid }}
-    steps:
-      - name: Check required secrets
-        id: check-secrets
-        run: |
-          if [ -z "${{ secrets.E2E_REPO }}" ]; then
-            echo "error=E2E_REPO secret is not set" >> $GITHUB_OUTPUT
-            echo "secrets-valid=false" >> $GITHUB_OUTPUT
-            echo "e2e-repo=" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-          if [ -z "${{ secrets.E2E_PAT }}" ]; then
-            echo "error=E2E_PAT secret is not set" >> $GITHUB_OUTPUT
-            echo "secrets-valid=false" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-          echo "secrets-valid=true" >> $GITHUB_OUTPUT
-          echo "e2e-repo=${{ secrets.E2E_REPO }}" >> $GITHUB_OUTPUT
+env:
+  E2E_REPO: ${{ secrets.E2E_REPO }}
 
+jobs:
   build:
     name: Build and Trigger E2E
     runs-on: ubuntu-latest
-    needs: validate-secrets
 
     steps:
       - name: Checkout code
@@ -101,10 +79,12 @@ jobs:
           # Properly escape for JSON using jq
           CHANGED_JSON=$(echo "$CHANGED_FILES" | jq -Rs .)
 
+          echo "Triggering E2E repo: ${{ env.E2E_REPO }}"
+
           RESPONSE=$(curl -s -w "%{http_code}" -X POST \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer ${{ secrets.E2E_PAT }}" \
-            https://api.github.com/repos/${{ needs.validate-secrets.outputs.e2e-repo }}/dispatches \
+            https://api.github.com/repos/${{ env.E2E_REPO }}/dispatches \
             -d "{
               \"event_type\": \"run-e2e-tests\",
               \"client_payload\": {
@@ -119,6 +99,7 @@ jobs:
           HTTP_CODE="${RESPONSE: -3}"
           if [ "$HTTP_CODE" != "204" ]; then
             echo "Failed to trigger E2E workflow (HTTP: $HTTP_CODE)"
+            echo "Response: $RESPONSE"
             exit 1
           fi
 
